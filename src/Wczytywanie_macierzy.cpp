@@ -62,7 +62,7 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
             for (int j = 0; j < n; ++j) {
                 int wartosc;
                 plik >> wartosc;
-                if (i == j || wartosc < 0) mat.dane[i][j] = INF;
+                if (i == j || wartosc < 0) mat.dane[i][j] = Macierz::INF;
                 else mat.dane[i][j] = wartosc;
             }
         }
@@ -112,7 +112,7 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
     // Upewniamy się, że cała przekątna to nasze zdefiniowane "INF", by algorytm nie szedł "z miasta do siebie samego".
     if (formatTSPLIB && format != "FULL_MATRIX") {
         for(int i = 0; i < n; ++i) {
-            mat.dane[i][i] = INF;
+            mat.dane[i][i] = Macierz::INF;
         }
     }
 

@@ -4,19 +4,21 @@
 #include <numeric>
 #include <iostream>
 #include <random>
+#include <ctime>
 
 using namespace std;
 
-Osobnik uruchom_GA(const Macierz& macierz, int rozmiar_populacji, int max_pokolen, double wsp_mutacji, double wsp_krzyzowania) {
-    int n = macierz.rozmiar;
+Osobnik uruchom_GA(const Macierz& macierz, size_t rozmiar_populacji, int max_pokolen, double wsp_mutacji, double wsp_krzyzowania) {
+    int n = macierz.n;
     vector<Osobnik> populacja(rozmiar_populacji);
 
     // 1. Inicjalizacja populacji początkowej (losowe permutacje)
     vector<int> bazowa_trasa(n);
     iota(bazowa_trasa.begin(), bazowa_trasa.end(), 0);
 
-    for (int i = 0; i < rozmiar_populacji; ++i) {
-        random_shuffle(bazowa_trasa.begin(), bazowa_trasa.end());
+    std::mt19937 rng(static_cast<unsigned>(std::time(nullptr)));
+    for (size_t i = 0; i < rozmiar_populacji; ++i) {
+        std::shuffle(bazowa_trasa.begin(), bazowa_trasa.end(), rng);
         populacja[i].trasa = bazowa_trasa;
         populacja[i].koszt = oblicz_koszt_ga(bazowa_trasa, macierz);
     }
