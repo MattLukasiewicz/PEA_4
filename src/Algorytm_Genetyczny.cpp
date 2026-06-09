@@ -64,10 +64,13 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
             Osobnik dziecko1 = populacja[idx1];
             Osobnik dziecko2 = populacja[idx2];
 
-            // b) Krzyżowanie OX
             if (szansa(gen) < cfg.ga_wsp_krzyzowania) {
-                Operatory_GA::krzyzowanie_OX(populacja[idx1], populacja[idx2], dziecko1, dziecko2);
-            }
+                if (cfg.ga_metoda_krzyzowania == "OX") {
+                    Operatory_GA::krzyzowanie_OX(populacja[idx1], populacja[idx2], dziecko1, dziecko2);
+                } else if (cfg.ga_metoda_krzyzowania == "PMX") {
+                    Operatory_GA::krzyzowanie_PMX(populacja[idx1], populacja[idx2], dziecko1, dziecko2);
+                }
+}
 
             // c) Mutacja Inwersja dla dziecka 1
             if (szansa(gen) < cfg.ga_wsp_mutacji) {
