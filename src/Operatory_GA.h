@@ -1,9 +1,22 @@
 #pragma once
 #include <vector>
+#include <string>
 #include "Osobnik.h"
 #include "Macierze.h"
 
-int oblicz_koszt_ga(const std::vector<int>& trasa, const Macierz& macierz);
-void mutacja_inwersja(std::vector<int>& trasa);
-std::vector<int> krzyzowanie_OX(const std::vector<int>& rodzic1, const std::vector<int>& rodzic2);
-Osobnik selekcja_turniejowa(const std::vector<Osobnik>& populacja, int rozmiar_turnieju);
+class Operatory_GA {
+public:
+    // Selekcja
+    static int selekcja_turniejowa(const std::vector<Osobnik>& populacja, int rozmiar_turnieju);
+
+    // Krzyżowanie
+    static void krzyzowanie_OX(const Osobnik& rodzic1, const Osobnik& rodzic2, Osobnik& dziecko1, Osobnik& dziecko2);
+    static void krzyzowanie_PMX(const Osobnik& rodzic1, const Osobnik& rodzic2, Osobnik& dziecko1, Osobnik& dziecko2);
+
+    // Mutacja
+    static void mutacja_inwersja(Osobnik& osobnik);
+    static void mutacja_scramble(Osobnik& osobnik);
+
+    // Pomocnicze
+    static int oblicz_koszt(const std::vector<int>& trasa, const std::vector<std::vector<int>>& graf);
+};

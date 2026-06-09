@@ -1,7 +1,7 @@
 CXX ?= g++
 CXXFLAGS ?= -std=c++17 -O2 -Wall -Wextra
 SRC := $(wildcard src/*.cpp)
-TARGET := pea3.exe
+TARGET := pea4.exe
 
 ifeq ($(OS),Windows_NT)
 RUN := .\$(TARGET)

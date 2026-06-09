@@ -1,7 +1,15 @@
 #pragma once
-#include "Macierze.h"
+#include <vector>
+#include <string>
 #include "Osobnik.h"
+#include "WczytywanieKonfiguracji.h"
 
-#include <cstddef>
-
-Osobnik uruchom_GA(const Macierz& macierz, size_t rozmiar_populacji, int max_pokolen, double wsp_mutacji, double wsp_krzyzowania);
+class Algorytm_Genetyczny {
+public:
+    static Osobnik wykonaj(const std::vector<std::vector<int>>& graf, 
+                           const WczytywanieKonfiguracji& cfg, 
+                           const std::string& plik_konwergencji);
+                           
+private:
+    static void optymalizacja_lokalna(Osobnik& osobnik, const std::vector<std::vector<int>>& graf);
+};

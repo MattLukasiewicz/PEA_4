@@ -1,130 +1,127 @@
 #include "Wczytywanie_macierzy.h"
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <sstream>
-#include <algorithm>
+#include <cctype>
+#include <map>
 
 using namespace std;
+
+// Słownik znanych minimów (optima) dla plików wymaganych w projekcie
+const map<string, int> SLOWNIK_OPTIMA = {
+    // Asymetryczne (ATSP)
+    {"br17", 39}, 
+    {"ftv33", 1286}, 
+    {"ftv35", 1473}, 
+    {"ftv38", 1530}, 
+    {"p43", 5620},
+    {"ftv47", 1776}, 
+    {"ry48p", 14422}, 
+    // Symetryczne (TSP)
+    {"gr17", 2085},
+    {"gr21", 2707}, 
+    {"gr24", 1272}, 
+    {"dantzig42", 699},
+    {"brazil58", 25395},
+    {"kroA100", 21282},
+    {"ch150", 6528},
+    {"gr202", 40160},
+    {"gr666", 294358}
+};
 
 Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
     ifstream plik(nazwaPliku);
     if (!plik.is_open()) {
-        cerr << "Wystapil blad: nie mozna otworzyc pliku z macierza: " << nazwaPliku << "\n";
+        cerr << "Blad: Nie mozna otworzyc pliku struktury danych: " << nazwaPliku << "\n";
         return Macierz(0);
     }
 
-    string line;
     int n = 0;
-    string format = "FULL_MATRIX"; // Domyślny format
-    bool formatTSPLIB = false;
+    string linia;
+    string format_wag = "FULL_MATRIX"; 
+    bool format_prosty_liczbowy = false;
 
-    // --- FAZA 1: Przeszukiwanie nagłówka TSPLIB ---
-    while (getline(plik, line)) {
-        // Ignorowanie pustych linii
-        if (line.empty()) continue;
-
-        if (line.find("DIMENSION") != string::npos) {
-            formatTSPLIB = true;
-            size_t dwukropek = line.find(':');
+    // 1. Detekcja nagłówka i formatu pliku
+    while (getline(plik, linia)) {
+        if (linia.find("DIMENSION") != string::npos) {
+            size_t dwukropek = linia.find(':');
             if (dwukropek != string::npos) {
-                n = stoi(line.substr(dwukropek + 1));
+                n = stoi(linia.substr(dwukropek + 1));
             } else {
-                // Jeśli nie ma dwukropka, szukamy pierwszej cyfry
-                size_t pos = line.find_first_of("0123456789");
-                if (pos != string::npos) n = stoi(line.substr(pos));
+                stringstream ss(linia);
+                string do_pominiecia;
+                ss >> do_pominiecia >> n;
             }
-        }
-        else if (line.find("EDGE_WEIGHT_FORMAT") != string::npos) {
-            if (line.find("UPPER_ROW") != string::npos) format = "UPPER_ROW";
-            else if (line.find("LOWER_ROW") != string::npos) format = "LOWER_ROW";
-            else if (line.find("UPPER_DIAG_ROW") != string::npos) format = "UPPER_DIAG_ROW";
-            else if (line.find("LOWER_DIAG_ROW") != string::npos) format = "LOWER_DIAG_ROW";
-            else format = "FULL_MATRIX";
-        }
-        else if (line.find("EDGE_WEIGHT_SECTION") != string::npos) {
-            break; // Znaleźliśmy początek danych, przerywamy pętlę i zaczynamy wczytywać liczby
+        } else if (linia.find("EDGE_WEIGHT_FORMAT") != string::npos) {
+            if (linia.find("UPPER_ROW") != string::npos) {
+                format_wag = "UPPER_ROW";
+            }
+        } else if (linia.find("EDGE_WEIGHT_SECTION") != string::npos) {
+            break; // Przerwij pętlę, poniżej są już tylko liczby
+        } else if (!linia.empty() && isdigit(linia[0]) && linia.find("NAME") == string::npos) {
+            // Brak tekstu, pierwsza linia to liczba miast - Twój stary format tekstowy
+            stringstream ss(linia);
+            ss >> n;
+            format_prosty_liczbowy = true;
+            break;
         }
     }
 
-    // Jeśli nie znaleziono słowa DIMENSION, to jest to Twój "stary" format (np. brazil58_prosty.txt)
-    // Zwijamy plik do początku i wczytujemy rozmiar normalnie.
-    if (!formatTSPLIB) {
-        plik.clear();
-        plik.seekg(0, ios::beg);
-        plik >> n;
-    }
-
+    if (n == 0) return Macierz(0);
     Macierz mat(n);
 
-    // --- FAZA 2: Wczytywanie danych z uwzględnieniem formatu TSPLIB ---
-    if (!formatTSPLIB || format == "FULL_MATRIX") {
+    // 2. Parsowanie właściwych wag krawędzi
+    if (format_wag == "FULL_MATRIX" || format_prosty_liczbowy) {
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
-                int wartosc;
-                plik >> wartosc;
-                if (i == j || wartosc < 0) mat.dane[i][j] = Macierz::INF;
-                else mat.dane[i][j] = wartosc;
+                int waga;
+                plik >> waga;
+                // Filtracja nieskończoności TSPLIB (9999, 100000000 itp.)
+                if (i == j || waga < 0 || waga == 9999 || waga >= 100000000) {
+                    mat.dane[i][j] = Macierz::INF;
+                } else {
+                    mat.dane[i][j] = waga;
+                }
             }
         }
-    }
-    else if (format == "UPPER_ROW") {
+    } else if (format_wag == "UPPER_ROW") {
+        // Górny trójkąt macierzy (np. plik brazil58.txt), przekątna to nieskończoność
+        for (int i = 0; i < n; ++i) mat.dane[i][i] = Macierz::INF; 
+        
         for (int i = 0; i < n - 1; ++i) {
             for (int j = i + 1; j < n; ++j) {
-                int wartosc;
-                plik >> wartosc;
-                mat.dane[i][j] = wartosc;
-                mat.dane[j][i] = wartosc; // TSP symetryczny - odbijamy lustrzanie
-            }
-        }
-    }
-    else if (format == "LOWER_ROW") {
-        for (int i = 1; i < n; ++i) {
-            for (int j = 0; j < i; ++j) {
-                int wartosc;
-                plik >> wartosc;
-                mat.dane[i][j] = wartosc;
-                mat.dane[j][i] = wartosc;
-            }
-        }
-    }
-    else if (format == "UPPER_DIAG_ROW") {
-        for (int i = 0; i < n; ++i) {
-            for (int j = i; j < n; ++j) {
-                int wartosc;
-                plik >> wartosc;
-                mat.dane[i][j] = wartosc;
-                mat.dane[j][i] = wartosc;
-            }
-        }
-    }
-    else if (format == "LOWER_DIAG_ROW") {
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j <= i; ++j) {
-                int wartosc;
-                plik >> wartosc;
-                mat.dane[i][j] = wartosc;
-                mat.dane[j][i] = wartosc;
+                int waga;
+                plik >> waga;
+                mat.dane[i][j] = waga;
+                mat.dane[j][i] = waga; // Automatyczna symetria grafu
             }
         }
     }
 
-    // W przypadku formatów uciętych TSPLIB czasami podaje "0" na przekątnej.
-    // Upewniamy się, że cała przekątna to nasze zdefiniowane "INF", by algorytm nie szedł "z miasta do siebie samego".
-    if (formatTSPLIB && format != "FULL_MATRIX") {
-        for(int i = 0; i < n; ++i) {
-            mat.dane[i][i] = Macierz::INF;
-        }
-    }
+    // 3. Odczyt optimum (najpierw szukamy sum_min, potem patrzymy do słownika)
+    plik.clear();
+    plik.seekg(0, ios::beg);
+    string token;
+    bool pobrano_z_pliku = false;
 
-    // --- FAZA 3: Szukanie rozwiązania optymalnego ---
-    // TSPLIB kończy się czasami znacznikiem "EOF", ale wspieramy też Twoje "sum_min="
-    string temp;
-    while (plik >> temp) {
-        if (temp == "EOF") continue;
-        size_t poz = temp.find("sum_min=");
-        if (poz != string::npos) {
-            mat.optymalnyKoszt = stoi(temp.substr(poz + 8));
+    // Przeszukujemy plik od nowa w poszukiwaniu znacznika na końcu
+    while (plik >> token) {
+        size_t pozycja = token.find("sum_min=");
+        if (pozycja != string::npos) {
+            mat.optymalnyKoszt = stoi(token.substr(pozycja + 8));
+            pobrano_z_pliku = true;
             break;
+        }
+    }
+
+    // Jeśli w pliku nie było znacznika, korzystamy z bezpiecznika (słownika)
+    if (!pobrano_z_pliku) {
+        for (auto const& [klucz_pliku, wartosc_optimum] : SLOWNIK_OPTIMA) {
+            if (nazwaPliku.find(klucz_pliku) != string::npos) {
+                mat.optymalnyKoszt = wartosc_optimum;
+                break;
+            }
         }
     }
 
