@@ -1,3 +1,2 @@
-Plik;N;Optimum;Powtorzenia;Sredni_Koszt;Sredni_Blad_Proc;Sredni_Czas_ms;Rozmiar_Pop;Pokolenia;Wsp_Krzyz;Metoda_Krzyz;Wsp_Mut;Metoda_Mut;Hybryda2Opt
-dane/asymetryczne/ftv33.atsp.txt;34;1286;10;1669.9;29.8523;96.5272;100;500;0.8;OX;0.05;INW;0
-dane/asymetryczne/ftv33.atsp.txt;34;1286;10;1688.5;31.2986;87.2293;100;500;0.8;OX;0.05;INW;0
+Plik;N;Optimum;Powtorzenia;Sredni_Koszt;Sredni_Blad_Proc;Sredni_Czas_ms;Rozmiar_Pop;Pokolenia;Wsp_Krzyz;Metoda_Krzyz;Wsp_Mut;Metoda_Mut
+dane/asymetryczne/ftv33.atsp.txt;34;1286;3;1657.33;28.8751;46.3104;100;200;0.8;PMX;0.05;INW

@@ -17,7 +17,7 @@ WczytywanieKonfiguracji::WczytywanieKonfiguracji() {
     ga_wsp_mutacji = 0.05;
     ga_metoda_mutacji = "INW";
     ga_elitaryzm = 1;
-    ga_hybryda_2opt = false;
+    ga_rozmiar_turnieju = 3;
     sciezka_do_pliku = "";
 }
 
@@ -57,7 +57,9 @@ bool WczytywanieKonfiguracji::wczytaj_z_pliku(const string& nazwa_pliku) {
             for (char& c : ga_metoda_mutacji) c = static_cast<char>(toupper(static_cast<unsigned char>(c)));
         }
         else if (klucz == "GA_ELITARYZM") plik >> ga_elitaryzm;
-        else if (klucz == "GA_HYBRYDA_2OPT") plik >> ga_hybryda_2opt;
+        else if (klucz == "GA_ROZMIAR_TURNIEJU") {
+            plik >> ga_rozmiar_turnieju;
+        }
         else if (klucz == "SCIEZKA_DO_PLIKU") plik >> sciezka_do_pliku;
     }
 

@@ -18,7 +18,7 @@ public:
     double ga_wsp_mutacji;
     std::string ga_metoda_mutacji;
     int ga_elitaryzm;
-    bool ga_hybryda_2opt;
+    int ga_rozmiar_turnieju;
 
     std::string sciezka_do_pliku;
 

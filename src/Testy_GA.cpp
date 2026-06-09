@@ -25,7 +25,7 @@ void przeprowadz_testy_ga(const string& sciezka, const WczytywanieKonfiguracji& 
     ofstream plik_csv(config.plik_wynikowy, ios::app); 
     plik_csv.seekp(0, ios::end);
     if (plik_csv.tellp() == 0) {
-        plik_csv << "Plik;N;Optimum;Powtorzenia;Sredni_Koszt;Sredni_Blad_Proc;Sredni_Czas_ms;Rozmiar_Pop;Pokolenia;Wsp_Krzyz;Metoda_Krzyz;Wsp_Mut;Metoda_Mut;Hybryda2Opt\n";
+        plik_csv << "Plik;N;Optimum;Powtorzenia;Sredni_Koszt;Sredni_Blad_Proc;Sredni_Czas_ms;Rozmiar_Pop;Pokolenia;Wsp_Krzyz;Metoda_Krzyz;Wsp_Mut;Metoda_Mut\n";
     }
 
     Stoper stoper;
@@ -81,8 +81,7 @@ void przeprowadz_testy_ga(const string& sciezka, const WczytywanieKonfiguracji& 
              << sredni_koszt << ";" << sredni_blad << ";" << sredni_czas << ";" 
              << config.ga_rozmiar_populacji << ";" << config.ga_max_pokolen << ";" 
              << config.ga_wsp_krzyzowania << ";" << config.ga_metoda_krzyzowania << ";" 
-             << config.ga_wsp_mutacji << ";" << config.ga_metoda_mutacji << ";" 
-             << config.ga_hybryda_2opt << "\n";
+             << config.ga_wsp_mutacji << ";" << config.ga_metoda_mutacji << "\n";
              
     plik_csv.close();
 }
