@@ -64,6 +64,8 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
                 format_wag = "UPPER_ROW";
             } else if (linia.find("LOWER_DIAG_ROW") != string::npos) {
                 format_wag = "LOWER_DIAG_ROW";
+            } else if (linia.find("UPPER_DIAG_ROW") != string::npos) {
+                format_wag = "UPPER_DIAG_ROW";
             }
         } else if (linia.find("EDGE_WEIGHT_SECTION") != string::npos) {
             break; // Przerwij pętlę, poniżej są już tylko liczby
@@ -103,6 +105,27 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
                 plik >> waga;
                 mat.dane[i][j] = waga;
                 mat.dane[j][i] = waga; // Automatyczna symetria grafu
+            }
+        }
+    } else if (format_wag == "UPPER_DIAG_ROW") {
+        // Upper diagonal row: values for j>=i in row-major order (includes diagonal)
+        int total = n * (n + 1) / 2;
+        std::vector<int> vals; vals.reserve(total);
+        int v;
+        while ((int)vals.size() < total && (plik >> v)) vals.push_back(v);
+        if ((int)vals.size() < total) {
+            plik.clear(); string tok;
+            while ((int)vals.size() < total && (plik >> tok)) {
+                try { vals.push_back(stoi(tok)); } catch(...) { continue; }
+            }
+        }
+        int idx = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i; j < n; ++j) {
+                int waga = (idx < (int)vals.size()) ? vals[idx++] : 0;
+                if (i == j || waga < 0 || waga == 9999 || waga >= 100000000) mat.dane[i][j] = Macierz::INF;
+                else mat.dane[i][j] = waga;
+                mat.dane[j][i] = mat.dane[i][j];
             }
         }
     } else if (format_wag == "LOWER_DIAG_ROW") {

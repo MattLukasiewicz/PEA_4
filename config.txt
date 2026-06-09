@@ -18,4 +18,4 @@ GA_ROZMIAR_TURNIEJU = 3
 
 
 // Sciezka do badanej macierzy
-SCIEZKA_DO_PLIKU = dane/asymetryczne/ftv33.atsp.txt
+SCIEZKA_DO_PLIKU = dane/symetryczne/si175.tsp.txt

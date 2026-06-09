@@ -72,14 +72,22 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
                 }
 }
 
-            // c) Mutacja Inwersja dla dziecka 1
+                        // c) Mutacja dla dziecka 1
             if (szansa(gen) < cfg.ga_wsp_mutacji) {
-                Operatory_GA::mutacja_inwersja(dziecko1);
+                if (cfg.ga_metoda_mutacji == "SCRAMBLE") {
+                    Operatory_GA::mutacja_scramble(dziecko1);
+                } else {
+                    Operatory_GA::mutacja_inwersja(dziecko1);
+                }
             }
 
-            // d) Mutacja Inwersja dla dziecka 2
+            // d) Mutacja dla dziecka 2
             if (szansa(gen) < cfg.ga_wsp_mutacji) {
-                Operatory_GA::mutacja_inwersja(dziecko2);
+                if (cfg.ga_metoda_mutacji == "SCRAMBLE") {
+                    Operatory_GA::mutacja_scramble(dziecko2);
+                } else {
+                    Operatory_GA::mutacja_inwersja(dziecko2);
+                }
             }
 
             // e) Ocena i dodanie do nowej populacji
