@@ -1,0 +1,9 @@
+Plik;N;Optimum;Powtorzenia;Sredni_Koszt;Sredni_Blad_Proc;Sredni_Czas_ms;Rozmiar_Pop;Pokolenia;Wsp_Krzyz;Metoda_Krzyz;Wsp_Mut;Metoda_Mut;Hybryda2Opt
+dane/symetryczne/gr17.tsp.txt;17;2085;3;126;-93.9568;27.7247;100;200;0.8;OX;0.05;INW;0
+dane/symetryczne/gr17.tsp.txt;17;2085;3;2091.67;0.319744;28.7572;100;200;0.8;OX;0.05;INW;0
+dane/symetryczne/gr21.tsp.txt;21;2707;3;2998.67;10.7745;39.7083;100;200;0.8;OX;0.05;INW;0
+dane/symetryczne/gr24.tsp.txt;24;1272;3;1375.67;8.1499;32.6018;100;200;0.8;OX;0.05;INW;0
+dane/symetryczne/bays29.tsp.txt;29;2020;3;2124;5.14851;34.8053;100;200;0.8;OX;0.05;INW;0
+dane/symetryczne/dantzig42.tsp.txt;42;699;3;864.667;23.7005;59.0748;100;200;0.8;OX;0.05;INW;0
+dane/symetryczne/gr48.tsp.txt;48;5046;3;5988.33;18.6749;63.7626;100;200;0.8;OX;0.05;INW;0
+dane/symetryczne/brazil58.tsp.txt;58;25395;3;31646;24.6151;66.6271;100;200;0.8;OX;0.05;INW;0

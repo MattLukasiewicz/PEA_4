@@ -18,12 +18,18 @@ const map<string, int> SLOWNIK_OPTIMA = {
     {"p43", 5620},
     {"ftv47", 1776}, 
     {"ry48p", 14422}, 
+    {"ftv64", 1839},
+    {"rbg323", 1326},
+    {"rbg403", 2465},
+    {"rbg443", 2720},
     // Symetryczne (TSP)
     {"gr17", 2085},
     {"gr21", 2707}, 
     {"gr24", 1272}, 
+    {"bays29", 2020},
     {"dantzig42", 699},
     {"brazil58", 25395},
+    {"gr48", 5046},
     {"kroA100", 21282},
     {"ch150", 6528},
     {"gr202", 40160},
@@ -56,6 +62,8 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
         } else if (linia.find("EDGE_WEIGHT_FORMAT") != string::npos) {
             if (linia.find("UPPER_ROW") != string::npos) {
                 format_wag = "UPPER_ROW";
+            } else if (linia.find("LOWER_DIAG_ROW") != string::npos) {
+                format_wag = "LOWER_DIAG_ROW";
             }
         } else if (linia.find("EDGE_WEIGHT_SECTION") != string::npos) {
             break; // Przerwij pętlę, poniżej są już tylko liczby
@@ -95,6 +103,39 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
                 plik >> waga;
                 mat.dane[i][j] = waga;
                 mat.dane[j][i] = waga; // Automatyczna symetria grafu
+            }
+        }
+    } else if (format_wag == "LOWER_DIAG_ROW") {
+        // Lower Diagonal Row format: values for j<=i in row-major order
+        int total = n * (n + 1) / 2;
+        std::vector<int> vals; vals.reserve(total);
+        int v;
+        while ((int)vals.size() < total && (plik >> v)) {
+            vals.push_back(v);
+        }
+        if ((int)vals.size() < total) {
+            // fallback: try to continue reading token by token and parse numbers
+            plik.clear();
+            string tok;
+            while ((int)vals.size() < total && (plik >> tok)) {
+                try {
+                    int vv = stoi(tok);
+                    vals.push_back(vv);
+                } catch (...) {
+                    continue;
+                }
+            }
+        }
+        int idx = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j <= i; ++j) {
+                int waga = (idx < (int)vals.size()) ? vals[idx++] : 0;
+                if (i == j || waga < 0 || waga == 9999 || waga >= 100000000) {
+                    mat.dane[i][j] = Macierz::INF;
+                } else {
+                    mat.dane[i][j] = waga;
+                }
+                mat.dane[j][i] = mat.dane[i][j];
             }
         }
     }
