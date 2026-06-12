@@ -8,11 +8,11 @@
 using namespace std;
 
 Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf, 
-                                     const WczytywanieKonfiguracji& cfg, 
+                                     const WczytywanieKonfiguracji& config, 
                                      const string& plik_konwergencji) {
                                          
     int n = graf.size();
-    vector<Osobnik> populacja(cfg.ga_rozmiar_populacji);
+    vector<Osobnik> populacja(config.ga_rozmiar_populacji);
     
     random_device rd;
     mt19937 gen(rd());
@@ -34,7 +34,7 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
     }
 
     // 2. Główna pętla ewolucji
-    for (int pokolenie = 0; pokolenie < cfg.ga_max_pokolen; ++pokolenie) {
+    for (int pokolenie = 0; pokolenie < config.ga_max_pokolen; ++pokolenie) {
         
         // Sortowanie populacji, aby wyłonić elitę i najlepszego osobnika
         sort(populacja.begin(), populacja.end());
@@ -50,31 +50,31 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
         vector<Osobnik> nowa_populacja;
 
         // Elitaryzm - dodajemy bezwzględnie najlepszego bez żadnych zmian
-        for (int i = 0; i < cfg.ga_elitaryzm; ++i) {
+        for (int i = 0; i < config.ga_elitaryzm; ++i) {
             nowa_populacja.push_back(populacja[i]);
         }
 
         // Generowanie reszty potomstwa
-        while (nowa_populacja.size() < (size_t)cfg.ga_rozmiar_populacji) {
+        while (nowa_populacja.size() < (size_t)config.ga_rozmiar_populacji) {
             
             // a) Selekcja Turniejowa (rozmiar turnieju sterowany z configu)
-            int idx1 = Operatory_GA::selekcja_turniejowa(populacja, cfg.ga_rozmiar_turnieju);
-            int idx2 = Operatory_GA::selekcja_turniejowa(populacja, cfg.ga_rozmiar_turnieju);
+            int idx1 = Operatory_GA::selekcja_turniejowa(populacja, config.ga_rozmiar_turnieju);
+            int idx2 = Operatory_GA::selekcja_turniejowa(populacja, config.ga_rozmiar_turnieju);
             
             Osobnik dziecko1 = populacja[idx1];
             Osobnik dziecko2 = populacja[idx2];
 
-            if (szansa(gen) < cfg.ga_wsp_krzyzowania) {
-                if (cfg.ga_metoda_krzyzowania == "OX") {
+            if (szansa(gen) < config.ga_wsp_krzyzowania) {
+                if (config.ga_metoda_krzyzowania == "OX") {
                     Operatory_GA::krzyzowanie_OX(populacja[idx1], populacja[idx2], dziecko1, dziecko2);
-                } else if (cfg.ga_metoda_krzyzowania == "PMX") {
+                } else if (config.ga_metoda_krzyzowania == "PMX") {
                     Operatory_GA::krzyzowanie_PMX(populacja[idx1], populacja[idx2], dziecko1, dziecko2);
                 }
 }
 
                         // c) Mutacja dla dziecka 1
-            if (szansa(gen) < cfg.ga_wsp_mutacji) {
-                if (cfg.ga_metoda_mutacji == "SCRAMBLE") {
+            if (szansa(gen) < config.ga_wsp_mutacji) {
+                if (config.ga_metoda_mutacji == "SCRAMBLE") {
                     Operatory_GA::mutacja_scramble(dziecko1);
                 } else {
                     Operatory_GA::mutacja_inwersja(dziecko1);
@@ -82,8 +82,8 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
             }
 
             // d) Mutacja dla dziecka 2
-            if (szansa(gen) < cfg.ga_wsp_mutacji) {
-                if (cfg.ga_metoda_mutacji == "SCRAMBLE") {
+            if (szansa(gen) < config.ga_wsp_mutacji) {
+                if (config.ga_metoda_mutacji == "SCRAMBLE") {
                     Operatory_GA::mutacja_scramble(dziecko2);
                 } else {
                     Operatory_GA::mutacja_inwersja(dziecko2);
@@ -94,7 +94,7 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
             dziecko1.koszt = Operatory_GA::oblicz_koszt(dziecko1.trasa, graf);
             nowa_populacja.push_back(dziecko1);
 
-            if (nowa_populacja.size() < (size_t)cfg.ga_rozmiar_populacji) {
+            if (nowa_populacja.size() < (size_t)config.ga_rozmiar_populacji) {
                 dziecko2.koszt = Operatory_GA::oblicz_koszt(dziecko2.trasa, graf);
                 nowa_populacja.push_back(dziecko2);
             }

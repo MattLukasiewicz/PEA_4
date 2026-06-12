@@ -7,6 +7,6 @@
 class Algorytm_Genetyczny {
 public:
     static Osobnik wykonaj(const std::vector<std::vector<int>>& graf, 
-                           const WczytywanieKonfiguracji& cfg, 
+                           const WczytywanieKonfiguracji& config, 
                            const std::string& plik_konwergencji);
 };

@@ -38,13 +38,8 @@ void przeprowadz_testy_ga(const string& sciezka, const WczytywanieKonfiguracji& 
     pokazPostep(config.wyswietlaj_pasek, 0, config.powtorzenia, "Badanie GA");
 
     for (int i = 0; i < config.powtorzenia; i++) {
-        // Czyścimy plik konwergencji dla PIERWSZEGO uruchomienia (i=0)
-        string plik_konw_do_przekazania = (i == 0) ? config.plik_konwergencji : "";
-        if (i == 0 && !plik_konw_do_przekazania.empty()) {
-            ofstream plik_konw(plik_konw_do_przekazania, ios::trunc); // Zawsze nadpisujemy stary wykres
-            plik_konw << "Iteracja;Najlepszy_Koszt\n";
-            plik_konw.close();
-        }
+        // Nie zapisujemy już konwergencji do osobnego pliku - wszystko trafia do pliku wynikowego
+        string plik_konw_do_przekazania = "";
 
         stoper.start(); 
         
