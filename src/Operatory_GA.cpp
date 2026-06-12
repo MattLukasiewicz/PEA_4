@@ -41,18 +41,15 @@ void Operatory_GA::krzyzowanie_OX(const Osobnik& rodzic1, const Osobnik& rodzic2
     int p2 = dist(gen);
     if (p1 > p2) swap(p1, p2);
 
-    // Funkcja lambda wykonująca kopiowanie OX dla pojedynczego dziecka
     auto wykonaj_OX = [n, p1, p2](const Osobnik& r1, const Osobnik& r2, Osobnik& d) {
         d.trasa.assign(n, -1);
         unordered_set<int> skopiowane;
 
-        // 1. Kopiuj środek z pierwszego rodzica
         for (int i = p1; i <= p2; ++i) {
             d.trasa[i] = r1.trasa[i];
             skopiowane.insert(r1.trasa[i]);
         }
 
-        // 2. Wypełniaj resztę miastami z drugiego rodzica
         int idx_dziecka = (p2 + 1) % n;
         int idx_rodzica2 = (p2 + 1) % n;
 
@@ -70,8 +67,6 @@ void Operatory_GA::krzyzowanie_OX(const Osobnik& rodzic1, const Osobnik& rodzic2
     wykonaj_OX(rodzic2, rodzic1, dziecko2);
 }
 
-// ... (Wcześniejszy kod z selekcją i OX zostaje taki sam)
-
 void Operatory_GA::krzyzowanie_PMX(const Osobnik& rodzic1, const Osobnik& rodzic2, Osobnik& dziecko1, Osobnik& dziecko2) {
     int n = rodzic1.trasa.size();
     uniform_int_distribution<> dist(0, n - 1);
@@ -84,16 +79,13 @@ void Operatory_GA::krzyzowanie_PMX(const Osobnik& rodzic1, const Osobnik& rodzic
         d.trasa.assign(n, -1);
         unordered_set<int> skopiowane;
 
-        // 1. Kopiuj środek z pierwszego rodzica (r1)
         for (int i = punkt1; i <= punkt2; ++i) {
             d.trasa[i] = r1.trasa[i];
             skopiowane.insert(r1.trasa[i]);
         }
 
-        // 2. Mapuj elementy z drugiego rodzica (r2) w obszarze przecięcia
         for (int i = punkt1; i <= punkt2; ++i) {
             int element_r2 = r2.trasa[i];
-            // Jeśli elementu z r2 nie ma jeszcze w dziecku
             if (skopiowane.find(element_r2) == skopiowane.end()) {
                 int aktualna_pozycja = i;
                 int element_r1 = r1.trasa[aktualna_pozycja];
@@ -103,13 +95,11 @@ void Operatory_GA::krzyzowanie_PMX(const Osobnik& rodzic1, const Osobnik& rodzic
                     auto it = find(r2.trasa.begin(), r2.trasa.end(), element_r1);
                     int index_w_r2 = distance(r2.trasa.begin(), it);
                     
-                    // Jeśli ten indeks w dziecku jest wolny, wstawiamy
                     if (d.trasa[index_w_r2] == -1) {
                         d.trasa[index_w_r2] = element_r2;
                         skopiowane.insert(element_r2);
                         break;
                     } else {
-                        // Jeśli zajęty, kontynuujemy skoki łańcuchowe
                         aktualna_pozycja = index_w_r2;
                         element_r1 = r1.trasa[aktualna_pozycja];
                     }
@@ -129,8 +119,6 @@ void Operatory_GA::krzyzowanie_PMX(const Osobnik& rodzic1, const Osobnik& rodzic
     wykonaj_PMX(rodzic2, rodzic1, dziecko2);
 }
 
-// ... (Później mutacja_inwersja i mutacja_scramble)
-
 
 void Operatory_GA::mutacja_inwersja(Osobnik& osobnik) {
     int n = osobnik.trasa.size();
@@ -140,7 +128,6 @@ void Operatory_GA::mutacja_inwersja(Osobnik& osobnik) {
     int p2 = dist(gen);
     if (p1 > p2) swap(p1, p2);
 
-    // Odwrócenie fragmentu wektora - niszczy tylko 2 krawędzie
     reverse(osobnik.trasa.begin() + p1, osobnik.trasa.begin() + p2 + 1);
 }
 
@@ -152,6 +139,5 @@ void Operatory_GA::mutacja_scramble(Osobnik& osobnik) {
     int p2 = dist(gen);
     if (p1 > p2) swap(p1, p2);
 
-    // Losowe przemieszanie fragmentu
     shuffle(osobnik.trasa.begin() + p1, osobnik.trasa.begin() + p2 + 1, gen);
 }

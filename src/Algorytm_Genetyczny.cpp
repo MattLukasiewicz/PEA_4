@@ -18,7 +18,6 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
     mt19937 gen(rd());
     uniform_real_distribution<> szansa(0.0, 1.0);
 
-    // 1. Inicjalizacja populacji początkowej (całkowicie losowe trasy)
     for (auto& osobnik : populacja) {
         osobnik.trasa.resize(n);
         iota(osobnik.trasa.begin(), osobnik.trasa.end(), 0);
@@ -33,10 +32,8 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
         plik_log.open(plik_konwergencji, ios::app);
     }
 
-    // 2. Główna pętla ewolucji
     for (int pokolenie = 0; pokolenie < config.ga_max_pokolen; ++pokolenie) {
         
-        // Sortowanie populacji, aby wyłonić elitę i najlepszego osobnika
         sort(populacja.begin(), populacja.end());
         
         if (populacja[0].koszt < globalnie_najlepszy.koszt) {
@@ -49,15 +46,12 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
 
         vector<Osobnik> nowa_populacja;
 
-        // Elitaryzm - dodajemy bezwzględnie najlepszego bez żadnych zmian
         for (int i = 0; i < config.ga_elitaryzm; ++i) {
             nowa_populacja.push_back(populacja[i]);
         }
 
-        // Generowanie reszty potomstwa
         while (nowa_populacja.size() < (size_t)config.ga_rozmiar_populacji) {
             
-            // a) Selekcja Turniejowa (rozmiar turnieju sterowany z configu)
             int idx1 = Operatory_GA::selekcja_turniejowa(populacja, config.ga_rozmiar_turnieju);
             int idx2 = Operatory_GA::selekcja_turniejowa(populacja, config.ga_rozmiar_turnieju);
             
@@ -72,7 +66,6 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
                 }
 }
 
-                        // c) Mutacja dla dziecka 1
             if (szansa(gen) < config.ga_wsp_mutacji) {
                 if (config.ga_metoda_mutacji == "SCRAMBLE") {
                     Operatory_GA::mutacja_scramble(dziecko1);
@@ -81,7 +74,6 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
                 }
             }
 
-            // d) Mutacja dla dziecka 2
             if (szansa(gen) < config.ga_wsp_mutacji) {
                 if (config.ga_metoda_mutacji == "SCRAMBLE") {
                     Operatory_GA::mutacja_scramble(dziecko2);
@@ -90,7 +82,6 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
                 }
             }
 
-            // e) Ocena i dodanie do nowej populacji
             dziecko1.koszt = Operatory_GA::oblicz_koszt(dziecko1.trasa, graf);
             nowa_populacja.push_back(dziecko1);
 
@@ -105,7 +96,6 @@ Osobnik Algorytm_Genetyczny::wykonaj(const vector<vector<int>>& graf,
     
     if (plik_log.is_open()) plik_log.close();
     
-    // Ostateczne sprawdzenie po wyjściu z pętli
     sort(populacja.begin(), populacja.end());
     if (populacja[0].koszt < globalnie_najlepszy.koszt) {
         globalnie_najlepszy = populacja[0];

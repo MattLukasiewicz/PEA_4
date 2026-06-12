@@ -8,9 +8,7 @@
 
 using namespace std;
 
-// Słownik znanych minimów (optima) dla plików wymaganych w projekcie
 const map<string, int> SLOWNIK_OPTIMA = {
-    // Asymetryczne (ATSP)
     {"br17", 39}, 
     {"ftv33", 1286}, 
     {"ftv35", 1473}, 
@@ -22,7 +20,6 @@ const map<string, int> SLOWNIK_OPTIMA = {
     {"rbg323", 1326},
     {"rbg403", 2465},
     {"rbg443", 2720},
-    // Symetryczne (TSP)
     {"gr17", 2085},
     {"gr21", 2707}, 
     {"gr24", 1272}, 
@@ -48,7 +45,6 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
     string format_wag = "FULL_MATRIX"; 
     bool format_prosty_liczbowy = false;
 
-    // 1. Detekcja nagłówka i formatu pliku
     while (getline(plik, linia)) {
         if (linia.find("DIMENSION") != string::npos) {
             size_t dwukropek = linia.find(':');
@@ -70,7 +66,6 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
         } else if (linia.find("EDGE_WEIGHT_SECTION") != string::npos) {
             break; // Przerwij pętlę, poniżej są już tylko liczby
         } else if (!linia.empty() && isdigit(linia[0]) && linia.find("NAME") == string::npos) {
-            // Brak tekstu, pierwsza linia to liczba miast - Twój stary format tekstowy
             stringstream ss(linia);
             ss >> n;
             format_prosty_liczbowy = true;
@@ -81,13 +76,12 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
     if (n == 0) return Macierz(0);
     Macierz mat(n);
 
-    // 2. Parsowanie właściwych wag krawędzi
     if (format_wag == "FULL_MATRIX" || format_prosty_liczbowy) {
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
                 int waga;
                 plik >> waga;
-                // Filtracja nieskończoności TSPLIB (9999, 100000000 itp.)
+
                 if (i == j || waga < 0 || waga == 9999 || waga >= 100000000) {
                     mat.dane[i][j] = Macierz::INF;
                 } else {
@@ -96,7 +90,7 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
             }
         }
     } else if (format_wag == "UPPER_ROW") {
-        // Górny trójkąt macierzy (np. plik brazil58.txt), przekątna to nieskończoność
+
         for (int i = 0; i < n; ++i) mat.dane[i][i] = Macierz::INF; 
         
         for (int i = 0; i < n - 1; ++i) {
@@ -104,11 +98,10 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
                 int waga;
                 plik >> waga;
                 mat.dane[i][j] = waga;
-                mat.dane[j][i] = waga; // Automatyczna symetria grafu
+                mat.dane[j][i] = waga;
             }
         }
     } else if (format_wag == "UPPER_DIAG_ROW") {
-        // Upper diagonal row: values for j>=i in row-major order (includes diagonal)
         int total = n * (n + 1) / 2;
         std::vector<int> vals; vals.reserve(total);
         int v;
@@ -129,7 +122,6 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
             }
         }
     } else if (format_wag == "LOWER_DIAG_ROW") {
-        // Lower Diagonal Row format: values for j<=i in row-major order
         int total = n * (n + 1) / 2;
         std::vector<int> vals; vals.reserve(total);
         int v;
@@ -137,7 +129,6 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
             vals.push_back(v);
         }
         if ((int)vals.size() < total) {
-            // fallback: try to continue reading token by token and parse numbers
             plik.clear();
             string tok;
             while ((int)vals.size() < total && (plik >> tok)) {
@@ -169,7 +160,6 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
     string token;
     bool pobrano_z_pliku = false;
 
-    // Przeszukujemy plik od nowa w poszukiwaniu znacznika na końcu
     while (plik >> token) {
         size_t pozycja = token.find("sum_min=");
         if (pozycja != string::npos) {
@@ -179,7 +169,6 @@ Macierz Wczytywanie_Macierzy::wczytajMacierz(const string& nazwaPliku) {
         }
     }
 
-    // Jeśli w pliku nie było znacznika, korzystamy z bezpiecznika (słownika)
     if (!pobrano_z_pliku) {
         for (auto const& [klucz_pliku, wartosc_optimum] : SLOWNIK_OPTIMA) {
             if (nazwaPliku.find(klucz_pliku) != string::npos) {

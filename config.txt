@@ -1,21 +1,15 @@
-// Plik konfiguracyjny - PEA Projekt 4 (Algorytm Genetyczny) - Wersja Podstawowa
-// 1 - tak, 0 - nie
-
 WYSWIETLAJ_PASEK_POSTEPU = 1
-PLIK_WYNIKOWY = wyniki/raport_ga.csv
-PLIK_KONWERGENCJI = wyniki/konwergencja_ga.csv
+PLIK_WYNIKOWY = wyniki/raport_wyniki.csv
+PLIK_KONWERGENCJI = wyniki/raport_konwergencja.csv
 POWTORZENIA = 3
 
-// Parametry Algorytmu Genetycznego
 GA_ROZMIAR_POPULACJI = 100
-GA_MAX_POKOLEN = 200
-GA_WSP_KRZYZOWANIA = 0.8
-GA_METODA_KRZYZOWANIA = PMX
+GA_MAX_POKOLEN = 500
+GA_WSP_KRZYZOWANIA = 0.80
+GA_METODA_KRZYZOWANIA = OX
 GA_WSP_MUTACJI = 0.05
 GA_METODA_MUTACJI = INW
 GA_ELITARYZM = 1
 GA_ROZMIAR_TURNIEJU = 3
 
-
-// Sciezka do badanej macierzy
-SCIEZKA_DO_PLIKU = dane/symetryczne/si175.tsp.txt
+SCIEZKA_DO_PLIKU = dane/asymetryczne/rbg403.atsp.txt

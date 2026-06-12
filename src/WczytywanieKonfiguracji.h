@@ -10,7 +10,6 @@ public:
     std::string plik_konwergencji;
     int powtorzenia;
 
-    // Parametry GA
     int ga_rozmiar_populacji;
     int ga_max_pokolen;
     double ga_wsp_krzyzowania;

@@ -21,7 +21,6 @@ void przeprowadz_testy_ga(const string& sciezka, const WczytywanieKonfiguracji& 
         cout << "Uwaga: Brak optimum (sum_min) dla: " << sciezka << ". Blad procentowy bedzie N/A." << endl;
     }
 
-    // Przygotowanie pliku wynikowego
     ofstream plik_csv(config.plik_wynikowy, ios::app); 
     plik_csv.seekp(0, ios::end);
     if (plik_csv.tellp() == 0) {
@@ -38,12 +37,10 @@ void przeprowadz_testy_ga(const string& sciezka, const WczytywanieKonfiguracji& 
     pokazPostep(config.wyswietlaj_pasek, 0, config.powtorzenia, "Badanie GA");
 
     for (int i = 0; i < config.powtorzenia; i++) {
-        // Nie zapisujemy już konwergencji do osobnego pliku - wszystko trafia do pliku wynikowego
         string plik_konw_do_przekazania = "";
 
         stoper.start(); 
         
-        // Wywołanie rdzenia Algorytmu Genetycznego
         Osobnik wynik = Algorytm_Genetyczny::wykonaj(graf, config, plik_konw_do_przekazania);
         
         stoper.stop();
